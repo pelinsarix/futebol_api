@@ -40,6 +40,13 @@ jogadores = [
 def get_jogadores():
     return jsonify(jogadores)
 
+@app.route('/jogadores/<int:id>', methods=['GET'])
+def get_jogador_por_id(id):
+    jogador = next((j for j in jogadores if j['id'] == id), None)
+    if jogador is None:
+        return jsonify({"erro": "Jogador não encontrado"}), 404
+    return jsonify(jogador)
+
 @app.route('/jogadores', methods=['POST'])
 def add_jogador():
     novo_jogador = request.get_json()
