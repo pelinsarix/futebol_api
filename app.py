@@ -35,32 +35,41 @@ jogadores = [
     {"id": 30, "nome": "Pedri", "time": "Barcelona"}
 ]
 
-
 @app.route('/jogadores', methods=['GET'])
 def get_jogadores():
-    return jsonify(jogadores)
+    if jogadores:
+        return jsonify({"mensagem": "Jogadores recuperados com sucesso!", "dados": jogadores}), 200
+    else:
+        return jsonify({"mensagem": "Nenhum jogador encontrado."}), 404
 
 @app.route('/jogadores/<int:id>', methods=['GET'])
 def get_jogador_por_id(id):
     jogador = next((j for j in jogadores if j['id'] == id), None)
     if jogador is None:
-        return jsonify({"erro": "Jogador não encontrado"}), 404
-    return jsonify(jogador)
+        return jsonify({"mensagem": "Erro: Jogador não encontrado"}), 404
+    return jsonify({"mensagem": "Jogador recuperado com sucesso!", "dados": jogador}), 200
 
 @app.route('/jogadores', methods=['POST'])
 def add_jogador():
     novo_jogador = request.get_json()
-    jogadores.append(novo_jogador)
-    return jsonify(novo_jogador), 201
+    if novo_jogador:
+        jogadores.append(novo_jogador)
+        return jsonify({"mensagem": "Jogador adicionado com sucesso!", "dados": novo_jogador}), 201
+    else:
+        return jsonify({"mensagem": "Erro: Dados do jogador inválidos"}), 400
 
 @app.route('/jogadores/<int:id>', methods=['PUT'])
 def update_jogador(id):
     jogador = next((j for j in jogadores if j['id'] == id), None)
     if jogador is None:
-        return jsonify({"erro": "Jogador não encontrado"}), 404
+        return jsonify({"mensagem": "Erro: Jogador não encontrado"}), 404
+    
     dados = request.get_json()
-    jogador.update(dados)
-    return jsonify(jogador)
+    if dados:
+        jogador.update(dados)
+        return jsonify({"mensagem": "Jogador atualizado com sucesso!", "dados": jogador}), 200
+    else:
+        return jsonify({"mensagem": "Erro: Dados para atualização inválidos"}), 400
 
 if __name__ == '__main__':
     app.run(debug=True)
